@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday</title>
+  <meta name="description" content="给朋友的生日祝福网页" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-1: #0f172a;
+      --bg-2: #1e293b;
+      --card: rgba(15, 23, 42, 0.55);
+      --text: #f8fafc;
+      --muted: #cbd5e1;
+      --brand: #f59e0b;
+      --brand-2: #38bdf8;
+      --accent: #fb7185;
+      --ok: #34d399;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      min-height: 100vh;
+      font-family: "Outfit", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.2), transparent 40%),
+        radial-gradient(circle at 80% 0%, rgba(251, 113, 133, 0.18), transparent 42%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+      overflow-x: hidden;
+    }
+    .stars {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(2px 2px at 20px 40px, rgba(255, 255, 255, 0.55), transparent),
+        radial-gradient(1px 1px at 120px 220px, rgba(255, 255, 255, 0.5), transparent),
+        radial-gradient(2px 2px at 300px 140px, rgba(255, 255, 255, 0.5), transparent),
+        radial-gradient(1px 1px at 430px 80px, rgba(255, 255, 255, 0.45), transparent);
+      background-size: 520px 520px;
+      animation: drift 22s linear infinite;
+      opacity: 0.75;
+    }
+    @keyframes drift {
+      from { transform: translateY(0); }
+      to { transform: translateY(-520px); }
+    }
+    .wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(920px, 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 28px;
+      background: linear-gradient(150deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+      backdrop-filter: blur(14px);
+      box-shadow: 0 28px 80px rgba(2, 6, 23, 0.5);
+      overflow: hidden;
+    }
+    .top {
+      padding: 44px 34px 24px;
+      text-align: center;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(245, 158, 11, 0.16);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fde68a;
+      font-size: 13px;
+      letter-spacing: 0.3px;
+    }
+    h1 {
+      margin-top: 18px;
+      font-family: "Noto Serif SC", serif;
+      font-size: clamp(32px, 4.8vw, 58px);
+      line-height: 1.12;
+      text-shadow: 0 10px 38px rgba(0, 0, 0, 0.35);
+    }
+    .name {
+      color: #fde68a;
+    }
+    .subtitle {
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: clamp(14px, 2vw, 17px);
+      line-height: 1.7;
+      max-width: 680px;
+      margin-inline: auto;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      padding: 0 22px 22px;
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .panel h2 {
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+    }
+    input {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      border-radius: 12px;
+      color: #f8fafc;
+      padding: 10px 12px;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus {
+      border-color: rgba(56, 189, 248, 0.9);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #0b1120;
+      background: linear-gradient(120deg, #fcd34d, #fb7185);
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    button:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(251, 113, 133, .35); }
+    .btns {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .btn-secondary {
+      background: rgba(15, 23, 42, 0.85);
+      color: #e2e8f0;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      font-weight: 500;
+    }
+    .message {
+      margin-top: 12px;
+      color: #fef3c7;
+      font-size: 14px;
+      min-height: 22px;
+    }
+    .wish {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      min-height: 248px;
+      perspective: 1000px;
+    }
+    .wish-inner {
+      width: 100%;
+      max-width: 300px;
+      min-height: 190px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform .8s cubic-bezier(.2,.8,.2,1);
+      cursor: pointer;
+    }
+    .wish-inner.is-flipped { transform: rotateY(180deg); }
+    .face {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 22px;
+      display: grid;
+      place-items: center;
+      backface-visibility: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: linear-gradient(155deg, rgba(56, 189, 248, 0.18), rgba(251, 113, 133, 0.18));
+      box-shadow: inset 0 0 36px rgba(15, 23, 42, 0.35);
+    }
+    .back {
+      transform: rotateY(180deg);
+      background: linear-gradient(160deg, rgba(245, 158, 11, 0.2), rgba(52, 211, 153, 0.2));
+    }
+    .face p { line-height: 1.7; font-size: 15px; color: #f8fafc; }
+    .hint { margin-top: 10px; color: #94a3b8; font-size: 12px; }
+    .footer {
+      padding: 0 24px 24px;
+      color: #94a3b8;
+      font-size: 12px;
+      text-align: center;
+    }
+    .float-emoji {
+      position: fixed;
+      font-size: 26px;
+      animation: rise 1.8s ease forwards;
+      pointer-events: none;
+      z-index: 2;
+    }
+    @keyframes rise {
+      0% { opacity: 0; transform: translateY(0) scale(.6) rotate(0deg); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-140px) scale(1.1) rotate(25deg); }
+    }
+    @media (max-width: 880px) {
+      .grid { grid-template-columns: 1fr; }
+      .top { padding: 34px 20px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <main class="wrap">
+    <section class="card">
+      <div class="top">
+        <span class="pill">Today Is A Special Day</span>
+        <h1>Happy Birthday, <span class="name" id="displayName">我的朋友</span></h1>
+        <p class="subtitle">
+          愿你在新的一岁里，始终被热爱包围，被好运偏爱。所有想要奔赴的远方，都在你的脚步下慢慢开花。
+        </p>
+      </div>
+      <div class="grid">
+        <div class="panel">
+          <h2>互动祝福台</h2>
+          <div class="controls">
+            <div class="row">
+              <input id="nameInput" type="text" placeholder="输入朋友名字，例如：小雨" maxlength="18" />
+              <button id="applyName">更新称呼</button>
+            </div>
+            <div class="btns">
+              <button id="celebrate">庆祝一下</button>
+              <button class="btn-secondary" id="toggleCard">翻转卡片</button>
+              <button class="btn-secondary" id="toggleMusic">播放音乐</button>
+            </div>
+            <p class="message" id="statusText"></p>
+          </div>
+        </div>
+        <div class="panel wish">
+          <div class="wish-inner" id="wishCard">
+            <article class="face">
+              <p>点击我，查看专属生日祝福 ✨</p>
+            </article>
+            <article class="face back">
+              <p id="wishText">愿你岁岁欢愉，万事胜意，所求皆如愿，所行化坦途。</p>
+            </article>
+          </div>
+          <p class="hint">Tip: 你也可以点击「庆祝一下」触发彩蛋</p>
+        </div>
+      </div>
+      <p class="footer">Made with love • GitHub Pages Ready</p>
+    </section>
+  </main>
+
+  <audio id="bgMusic" loop preload="none">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8f7f8f9c3.mp3?filename=happy-birthday-to-you-piano-version-13976.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    const displayName = document.getElementById("displayName");
+    const nameInput = document.getElementById("nameInput");
+    const statusText = document.getElementById("statusText");
+    const wishText = document.getElementById("wishText");
+    const wishCard = document.getElementById("wishCard");
+    const bgMusic = document.getElementById("bgMusic");
+    const toggleMusicBtn = document.getElementById("toggleMusic");
+
+    const wishes = [
+      "愿你岁岁欢愉，万事胜意，所求皆如愿，所行化坦途。",
+      "愿你永远保有热爱与勇气，笑容和好消息都如期而至。",
+      "新的一岁，愿你被世界温柔以待，也有力量温柔世界。",
+      "愿你追光的人生里，处处都有鲜花与掌声。"
+    ];
+
+    function safeName(name) {
+      const cleaned = name.trim().slice(0, 18);
+      return cleaned || "我的朋友";
+    }
+
+    function setStatus(text, color = "#fef3c7") {
+      statusText.textContent = text;
+      statusText.style.color = color;
+    }
+
+    function updateName() {
+      const name = safeName(nameInput.value);
+      displayName.textContent = name;
+      const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+      wishText.textContent = `给${name}：${randomWish}`;
+      setStatus(`称呼已更新为「${name}」`, "#86efac");
+    }
+
+    function popEmojis(count = 24) {
+      const emojiSet = ["🎉", "🎂", "✨", "🎈", "🥳", "💫"];
+      for (let i = 0; i < count; i++) {
+        const span = document.createElement("span");
+        span.className = "float-emoji";
+        span.textContent = emojiSet[Math.floor(Math.random() * emojiSet.length)];
+        span.style.left = `${Math.random() * 100}vw`;
+        span.style.bottom = `${Math.random() * 24}px`;
+        span.style.animationDelay = `${Math.random() * 0.5}s`;
+        document.body.appendChild(span);
+        setTimeout(() => span.remove(), 1900);
+      }
+      setStatus("生日氛围已拉满，快乐加载中！", "#7dd3fc");
+    }
+
+    function toggleCard() {
+      wishCard.classList.toggle("is-flipped");
+    }
+
+    async function toggleMusic() {
+      try {
+        if (bgMusic.paused) {
+          await bgMusic.play();
+          toggleMusicBtn.textContent = "暂停音乐";
+          setStatus("背景音乐已开启", "#7dd3fc");
+        } else {
+          bgMusic.pause();
+          toggleMusicBtn.textContent = "播放音乐";
+          setStatus("背景音乐已暂停", "#cbd5e1");
+        }
+      } catch {
+        setStatus("浏览器阻止了自动播放，请再点一次按钮。", "#fda4af");
+      }
+    }
+
+    document.getElementById("applyName").addEventListener("click", updateName);
+    document.getElementById("celebrate").addEventListener("click", () => {
+      popEmojis();
+      if (wishCard.classList.contains("is-flipped") === false) toggleCard();
+    });
+    document.getElementById("toggleCard").addEventListener("click", toggleCard);
+    toggleMusicBtn.addEventListener("click", toggleMusic);
+    wishCard.addEventListener("click", toggleCard);
+    nameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") updateName();
+    });
+
+    updateName();
+  </script>
+</body>
+</html>
