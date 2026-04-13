@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎂 生日快乐！</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  overflow: hidden;
+  background: #0a0015;
+  font-family: 'Noto Serif SC', 'Ma Shan Zheng', serif;
+  cursor: crosshair;
+  user-select: none;
+}
+
+/* ===== 音乐控制按钮 ===== */
+.music-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  animation: pulse-ring 2s infinite;
+}
+.music-btn:hover {
+  background: rgba(255,255,255,0.2);
+  transform: scale(1.1);
+}
+.music-btn svg { width: 22px; height: 22px; fill: #fff; }
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+  70% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+}
+
+/* ===== Bokeh 粒子背景 ===== */
+.bokeh-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.bokeh {
+  position: absolute;
+  border-radius: 50%;
+  animation: float-up linear infinite;
+  opacity: 0;
+}
+@keyframes float-up {
+  0% { opacity: 0; transform: translateY(100vh) scale(0); }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.5; }
+  100% { opacity: 0; transform: translateY(-10vh) scale(1); }
+}
+
+/* ===== 烟花画布 ===== */
+#fireworks {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ===== 彩色气球 ===== */
+.balloons {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+.balloon {
+  position: absolute;
+  width: 40px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  bottom: -80px;
+  animation: rise linear infinite;
+  box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2), inset 5px 5px 15px rgba(255,255,255,0.3);
+}
+.balloon::before {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 20px solid inherit;
+}
+.balloon::after {
+  content: '';
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  width: 1px;
+  height: 20px;
+  background: rgba(255,255,255,0.4);
+}
+@keyframes rise {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+  50% { transform: translateY(-50vh) rotate(10deg); }
+  100% { transform: translateY(-120vh) rotate(-5deg); opacity: 0; }
+}
+
+/* ===== 主内容层 ===== */
+.main-content {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* ===== 标题文字动画 ===== */
+.title-wrap {
+  text-align: center;
+  animation: title-entrance 1.5s ease-out 0.5s both;
+}
+@keyframes title-entrance {
+  0% { opacity: 0; transform: scale(0.5) translateY(30px); }
+  60% { transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.happy-text {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: clamp(48px, 10vw, 100px);
+  color: #fff;
+  text-shadow:
+    0 0 20px rgba(255,100,200,0.8),
+    0 0 40px rgba(255,100,200,0.5),
+    0 0 60px rgba(255,100,200,0.3);
+  animation: glow-pulse 3s ease-in-out infinite alternate;
+  letter-spacing: 8px;
+  line-height: 1.2;
+}
+@keyframes glow-pulse {
+  0% { text-shadow: 0 0 20px rgba(255,100,200,0.8), 0 0 40px rgba(255,100,200,0.5); filter: brightness(1); }
+  100% { text-shadow: 0 0 40px rgba(255,200,100,1), 0 0 80px rgba(255,150,50,0.7), 0 0 120px rgba(255,100,200,0.4); filter: brightness(1.2); }
+}
+
+.name-text {
+  font-family: 'Noto Serif SC', serif;
+  font-size: clamp(36px, 8vw, 80px);
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffecd2, #fcb69f, #ffecd2, #ffb6c1);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradient-shift 4s ease infinite;
+  margin-top: 10px;
+  letter-spacing: 4px;
+}
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.subtitle {
+  font-size: clamp(16px, 3vw, 28px);
+  color: rgba(255,255,255,0.8);
+  margin-top: 20px;
+  font-family: 'Ma Shan Zheng', cursive;
+  letter-spacing: 3px;
+  animation: fade-in-up 1s ease-out 1.5s both;
+}
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== 蛋糕 ===== */
+.cake-container {
+  margin-top: 30px;
+  perspective: 1000px;
+  animation: cake-entrance 1.5s ease-out 2s both;
+}
+@keyframes cake-entrance {
+  0% { opacity: 0; transform: scale(0.3) rotateX(90deg); }
+  60% { transform: scale(1.1) rotateX(-5deg); }
+  100% { opacity: 1; transform: scale(1) rotateX(0); }
+}
+
+.cake {
+  position: relative;
+  width: 200px;
+  margin: 0 auto;
+  transform-style: preserve-3d;
+  animation: cake-float 3s ease-in-out infinite;
+}
+@keyframes cake-float {
+  0%, 100% { transform: translateY(0) rotateY(0deg); }
+  50% { transform: translateY(-15px) rotateY(3deg); }
+}
+
+/* 蛋糕层 */
+.cake-layer {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 8px 8px 12px 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3), inset 0 -5px 15px rgba(0,0,0,0.15);
+}
+.layer-1 {
+  width: 200px; height: 60px;
+  bottom: 0;
+  background: linear-gradient(to bottom, #e8a0b0, #d4708a);
+  border-radius: 12px;
+}
+.layer-2 {
+  width: 170px; height: 55px;
+  bottom: 58px;
+  background: linear-gradient(to bottom, #f0b8c8, #e090a0);
+  border-radius: 10px;
+}
+.layer-3 {
+  width: 140px; height: 50px;
+  bottom: 111px;
+  background: linear-gradient(to bottom, #f8d0d8, #f0b0c0);
+  border-radius: 8px;
+}
+
+/* 糖霜 */
+.frosting {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px; height: 12px;
+  bottom: 48px;
+  background: linear-gradient(to bottom, #fff5f5, #ffe0e8);
+  border-radius: 0 0 15px 15px;
+  box-shadow: 0 3px 8px rgba(255,150,180,0.4);
+}
+.frosting::before {
+  content: '';
+  position: absolute;
+  top: -8px; left: -5px;
+  width: 210px; height: 16px;
+  background: radial-gradient(ellipse at center, #fff5f5 40%, transparent 70%);
+  border-radius: 50%;
+}
+
+/* 蜡烛 */
+.candle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px; height: 40px;
+  bottom: 161px;
+  background: linear-gradient(to right, #ff6b9d, #ff8fa3, #ff6b9d);
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255,107,157,0.4);
+}
+.candle::before {
+  content: '';
+  position: absolute;
+  top: -6px; left: 50%;
+  transform: translateX(-50%);
+  width: 16px; height: 16px;
+  background: radial-gradient(circle, #fff8c0, #ffdd00, #ff8800, transparent);
+  border-radius: 50%;
+  animation: flicker 0.3s ease-in-out infinite alternate;
+}
+@keyframes flicker {
+  0% { transform: translateX(-50%) scale(1) rotate(-3deg); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1.2) rotate(3deg); opacity: 0.85; }
+}
+
+/* 蜡烛火焰光晕 */
+.candle::after {
+  content: '';
+  position: absolute;
+  top: -25px; left: 50%;
+  transform: translateX(-50%);
+  width: 40px; height: 40px;
+  background: radial-gradient(circle, rgba(255,200,50,0.25), transparent 70%);
+  border-radius: 50%;
+  animation: flame-glow 0.4s ease-in-out infinite alternate;
+}
+@keyframes flame-glow {
+  0% { opacity: 0.7; transform: translateX(-50%) scale(1); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1.15); }
+}
+
+/* 生日帽 */
+.hat {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 200px;
+  width: 0; height: 0;
+  border-left: 18px solid transparent;
+  border-right: 18px solid transparent;
+  border-bottom: 35px solid #ff4d6d;
+  filter: drop-shadow(0 0 5px rgba(255,77,109,0.5));
+}
+.hat::before {
+  content: '';
+  position: absolute;
+  top: -10px; left: -24px;
+  width: 48px; height: 10px;
+  background: radial-gradient(ellipse at center, #fff 40%, #ffd0d8 100%);
+  border-radius: 50%;
+}
+.hat::after {
+  content: '🎉';
+  position: absolute;
+  top: -28px; left: -6px;
+  font-size: 18px;
+}
+
+/* ===== 祝福语卡片 ===== */
+.blessing-card {
+  margin-top: 40px;
+  padding: 20px 30px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  color: #fff;
+  font-size: clamp(15px, 2.5vw, 20px);
+  text-align: center;
+  max-width: 90vw;
+  line-height: 1.8;
+  animation: card-appear 1s ease-out 3s both;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  pointer-events: auto;
+}
+@keyframes card-appear {
+  0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.blessing-card .from {
+  margin-top: 12px;
+  font-size: 0.85em;
+  color: rgba(255,255,255,0.6);
+  font-family: 'Ma Shan Zheng', cursive;
+  letter-spacing: 2px;
+}
+
+/* ===== 星星闪烁 ===== */
+.stars {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+.star {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle linear infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.5); }
+}
+
+/* ===== 点击提示 ===== */
+.click-hint {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  letter-spacing: 2px;
+  z-index: 20;
+  animation: bounce-hint 2s ease-in-out infinite;
+  pointer-events: none;
+  font-family: 'Ma Shan Zheng', cursive;
+}
+@keyframes bounce-hint {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.5; }
+  50% { transform: translateX(-50%) translateY(-8px); opacity: 0.8; }
+}
+.click-hint.hidden { display: none; }
+
+/* ===== 爱心粒子（点击触发） ===== */
+.heart-particle {
+  position: absolute;
+  font-size: 20px;
+  pointer-events: none;
+  animation: heart-rise 2s ease-out forwards;
+  z-index: 50;
+}
+@keyframes heart-rise {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-200px) scale(0.3) rotate(30deg); }
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 600px) {
+  .cake { transform: scale(0.75); }
+  .cake-container { margin-top: 15px; }
+  .blessing-card { padding: 15px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 音乐播放按钮 -->
+<button class="music-btn" id="musicBtn" onclick="toggleMusic()" title="播放/暂停音乐">
+  <svg id="musicIcon" viewBox="0 0 24 24"><path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/></svg>
+</button>
+
+<!-- 烟花画布 -->
+<canvas id="fireworks"></canvas>
+
+<!-- Bokeh 粒子背景 -->
+<div class="bokeh-bg" id="bokehBg"></div>
+
+<!-- 星星 -->
+<div class="stars" id="stars"></div>
+
+<!-- 气球 -->
+<div class="balloons" id="balloons"></div>
+
+<!-- 主内容 -->
+<div class="main-content">
+  <div class="title-wrap">
+    <div class="happy-text">🎂 Happy Birthday 🎂</div>
+    <div class="name-text" id="birthdayName">小可爱</div>
+    <div class="subtitle">✨ 愿你每一天都闪闪发光 ✨</div>
+  </div>
+
+  <div class="cake-container">
+    <div class="cake">
+      <div class="hat"></div>
+      <div class="candle"></div>
+      <div class="cake-layer layer-3"></div>
+      <div class="frosting"></div>
+      <div class="cake-layer layer-2"></div>
+      <div class="cake-layer layer-1"></div>
+    </div>
+  </div>
+
+  <div class="blessing-card">
+    <div id="blessingText">愿你的眼里永远有星辰，<br>心里永远有暖阳，<br>笑容永远像今天一样灿烂！🎉</div>
+    <div class="from" id="fromText">—— 来自你的好朋友</div>
+  </div>
+</div>
+
+<div class="click-hint" id="clickHint">✨ 点击屏幕放烟花 ✨</div>
+
+<!-- 背景音乐（生日歌） -->
+<audio id="bgMusic" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+/* ====================================================
+   配置区 — 修改这里来定制内容
+   ==================================================== */
+const CONFIG = {
+  birthdayName: '小可爱',        // 寿星的名字
+  blessingText: '愿你的眼里永远有星辰，\n心里永远有暖阳，\n笑容永远像今天一样灿烂！🎉',
+  fromText: '—— 来自你的好朋友',
+  musicUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', // 可换成生日歌URL
+  // 如果想要纯音乐版生日歌，可以用这个URL:
+  // 'https://files.freemusicarchive.org/...'
+};
+
+/* ====================================================
+   初始化配置
+   ==================================================== */
+document.getElementById('birthdayName').textContent = CONFIG.birthdayName;
+document.getElementById('blessingText').innerHTML = CONFIG.blessingText.replace(/\n/g, '<br>');
+document.getElementById('fromText').textContent = CONFIG.fromText;
+document.getElementById('bgMusic').src = CONFIG.musicUrl;
+
+/* ====================================================
+   音乐控制
+   ==================================================== */
+const music = document.getElementById('bgMusic');
+const musicIcon = document.getElementById('musicIcon');
+let musicPlaying = false;
+
+function toggleMusic() {
+  if (musicPlaying) {
+    music.pause();
+    musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>';
+  } else {
+    music.play().catch(() => {});
+    musicIcon.innerHTML = '<path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>';
+  }
+  musicPlaying = !musicPlaying;
+}
+
+/* ====================================================
+   烟花系统
+   ==================================================== */
+const canvas = document.getElementById('fireworks');
+const ctx = canvas.getContext('2d');
+let fireworks = [], particles = [];
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Firework {
+  constructor(x, y, targetY) {
+    this.x = x;
+    this.y = y;
+    this.targetY = targetY;
+    this.speed = 4 + Math.random() * 3;
+    this.angle = -Math.PI / 2 + (Math.random() - 0.5) * 0.3;
+    this.vx = Math.cos(this.angle) * this.speed;
+    this.vy = Math.sin(this.angle) * this.speed;
+    this.trail = [];
+    this.exploded = false;
+    this.color = `hsl(${Math.random() * 360}, 100%, 65%)`;
+  }
+
+  update() {
+    this.trail.push({ x: this.x, y: this.y });
+    if (this.trail.length > 8) this.trail.shift();
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += 0.03;
+    if (this.vy >= 0 || this.y <= this.targetY) {
+      this.explode();
+      return false;
+    }
+    return true;
+  }
+
+  explode() {
+    const colors = [this.color, '#fff', '#ff6b9d', '#ffd700', '#ff4500', '#00bfff', '#ff69b4'];
+    for (let i = 0; i < 80; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 1 + Math.random() * 5;
+      const c = colors[Math.floor(Math.random() * colors.length)];
+      particles.push(new Particle(this.x, this.y, Math.cos(angle) * speed, Math.sin(angle) * speed, c));
+    }
+  }
+
+  draw() {
+    // 尾迹
+    for (let i = 0; i < this.trail.length; i++) {
+      const alpha = i / this.trail.length * 0.6;
+      ctx.beginPath();
+      ctx.arc(this.trail[i].x, this.trail[i].y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = this.color.replace('100%', '80%').replace('65%', `${30 + i * 5}%`);
+      ctx.globalAlpha = alpha;
+      ctx.fill();
+    }
+    // 主体
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = 1;
+    ctx.fill();
+  }
+}
+
+class Particle {
+  constructor(x, y, vx, vy, color) {
+    this.x = x; this.y = y;
+    this.vx = vx; this.vy = vy;
+    this.color = color;
+    this.alpha = 1;
+    this.decay = 0.012 + Math.random() * 0.012;
+    this.gravity = 0.06;
+    this.trail = [];
+  }
+
+  update() {
+    this.trail.push({ x: this.x, y: this.y });
+    if (this.trail.length > 5) this.trail.shift();
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += this.gravity;
+    this.vx *= 0.98;
+    this.alpha -= this.decay;
+    return this.alpha > 0;
+  }
+
+  draw() {
+    for (let i = 0; i < this.trail.length; i++) {
+      ctx.beginPath();
+      ctx.arc(this.trail[i].x, this.trail[i].y, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = (i / this.trail.length) * this.alpha * 0.5;
+      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.alpha;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+function launchFirework(x, targetY) {
+  if (x === undefined) x = Math.random() * canvas.width;
+  if (targetY === undefined) targetY = Math.random() * canvas.height * 0.5;
+  fireworks.push(new Firework(x, canvas.height, targetY));
+}
+
+function animateFireworks() {
+  ctx.fillStyle = 'rgba(10, 0, 21, 0.15)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  fireworks = fireworks.filter(fw => { const alive = fw.update(); fw.draw(); return alive; });
+  particles = particles.filter(p => { const alive = p.update(); p.draw(); return alive; });
+
+  ctx.globalAlpha = 1;
+  requestAnimationFrame(animateFireworks);
+}
+
+// 自动放烟花
+let autoLaunchTimer = 0;
+setInterval(() => {
+  autoLaunchTimer++;
+  if (autoLaunchTimer % 30 === 0) {
+    launchFirework();
+  }
+  if (autoLaunchTimer % 60 === 0) {
+    // 同时放两发
+    launchFirework(Math.random() * canvas.width * 0.5);
+    launchFirework(canvas.width * 0.5 + Math.random() * canvas.width * 0.5);
+  }
+}, 200);
+
+// 点击屏幕放烟花
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.music-btn')) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  launchFirework(x, y * 0.4);
+  // 点击时产生爱心
+  spawnHearts(e.clientX, e.clientY);
+  // 隐藏提示
+  document.getElementById('clickHint').classList.add('hidden');
+});
+
+animateFireworks();
+
+/* ====================================================
+   爱心粒子
+   ==================================================== */
+function spawnHearts(x, y) {
+  const hearts = ['❤️', '💖', '💝', '💕', '✨', '🌟'];
+  for (let i = 0; i < 8; i++) {
+    const el = document.createElement('div');
+    el.className = 'heart-particle';
+    el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+    el.style.left = (x + (Math.random() - 0.5) * 100) + 'px';
+    el.style.top = y + 'px';
+    el.style.fontSize = (14 + Math.random() * 16) + 'px';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2000);
+  }
+}
+
+/* ====================================================
+   Bokeh 粒子背景
+   ==================================================== */
+const bokehBg = document.getElementById('bokehBg');
+const bokehColors = ['#ff6b9d', '#c471ed', '#f64f59', '#12c2e9', '#f5af19', '#c471ed', '#ffecd2', '#a18cd1'];
+function createBokeh() {
+  const b = document.createElement('div');
+  b.className = 'bokeh';
+  const size = 5 + Math.random() * 20;
+  b.style.cssText = `
+    width: ${size}vmin; height: ${size}vmin;
+    background: radial-gradient(circle, ${bokehColors[Math.floor(Math.random() * bokehColors.length)]}aa, transparent);
+    left: ${Math.random() * 100}vw;
+    animation-duration: ${6 + Math.random() * 10}s;
+    animation-delay: ${-Math.random() * 10}s;
+  `;
+  bokehBg.appendChild(b);
+  setTimeout(() => b.remove(), 20000);
+}
+setInterval(createBokeh, 500);
+for (let i = 0; i < 15; i++) setTimeout(createBokeh, i * 300);
+
+/* ====================================================
+   气球
+   ==================================================== */
+const balloonsEl = document.getElementById('balloons');
+const balloonColors = ['#ff6b9d', '#ffd700', '#00bfff', '#ff69b4', '#7fff00', '#ff4500', '#da70d6'];
+function createBalloon() {
+  const b = document.createElement('div');
+  b.className = 'balloon';
+  const color = balloonColors[Math.floor(Math.random() * balloonColors.length)];
+  b.style.cssText = `
+    left: ${Math.random() * 90 + 5}%;
+    background: linear-gradient(135deg, ${color}, ${color}99);
+    animation-duration: ${8 + Math.random() * 6}s;
+    animation-delay: ${-Math.random() * 5}s;
+    width: ${30 + Math.random() * 20}px;
+    height: ${38 + Math.random() * 25}px;
+  `;
+  balloonsEl.appendChild(b);
+  setTimeout(() => b.remove(), 15000);
+}
+setInterval(createBalloon, 2000);
+for (let i = 0; i < 5; i++) setTimeout(createBalloon, i * 600);
+
+/* ====================================================
+   星星
+   ==================================================== */
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.cssText = `
+    left: ${Math.random() * 100}vw;
+    top: ${Math.random() * 100}vh;
+    animation-duration: ${1 + Math.random() * 3}s;
+    animation-delay: ${-Math.random() * 3}s;
+    width: ${1 + Math.random() * 3}px;
+    height: ${1 + Math.random() * 3}px;
+  `;
+  starsEl.appendChild(s);
+}
+
+/* ====================================================
+   3D 鼠标跟随效果
+   ==================================================== */
+const mainContent = document.querySelector('.main-content');
+document.addEventListener('mousemove', (e) => {
+  const x = (e.clientX / window.innerWidth - 0.5) * 10;
+  const y = (e.clientY / window.innerHeight - 0.5) * 10;
+  mainContent.style.transform = `perspective(1000px) rotateY(${x * 0.3}deg) rotateX(${-y * 0.3}deg)`;
+});
+document.addEventListener('mouseleave', () => {
+  mainContent.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg)';
+  mainContent.style.transition = 'transform 0.5s ease';
+});
+document.addEventListener('mouseenter', () => {
+  mainContent.style.transition = 'none';
+});
+
+/* ====================================================
+   初始化完成
+   ==================================================== */
+console.log('🎂 生日快乐！已为你准备了精美的生日祝福网页。');
+console.log('💡 提示：在 CONFIG 配置区修改姓名、祝福语和音乐链接即可定制！');
+</script>
+</body>
+</html>
